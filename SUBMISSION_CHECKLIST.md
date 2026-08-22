@@ -87,25 +87,89 @@ cd backend && PYTHONPATH=. python tests/test_agent_mock.py
   (TKT-451 historical answer says yes) → product guide says the limit is
   **5,000 rows**; ~3,000 is the KI-208 bug, not the policy.
 
-## Demo script (~5 min, read-aloud)
+## Demo script — read-aloud (~5 min)
 
-Warm the URL first (or run locally for snappier responses). Have two identities ready.
+Warm the live URL first (or run locally for snappier responses). Have two
+identities ready. Plain text = say it; **[SCREEN]** = do it.
 
-- **0:00–0:40 Intro + architecture** — two contexts on one agent core; policy in
-  the prompt, mechanism (access control, reliability, confirmation) in code;
-  7 tools across 3 categories; provider-agnostic LLM adapter.
-- **0:40–2:00 Customer flow** — as **Northstar**, ask *"Can I cancel ORD-1001
-  without a fee?"* Show tool chips (order → account → documents); explain the
-  agreement overrides the SOP fee → **no fee**, grounded in sources.
-- **2:00–2:45 Access control** — Switch to **LumenWorks**, ask *"Show me
-  ORD-1001"* → **refused** by the data layer, not the prompt.
-- **2:45–3:45 Internal + confirmation** — **Ops → Insights** (two P1 breaches +
-  bulk-upload cluster); back to Chat, *"Escalate TKT-501"* → prepares, then
-  **Confirm**.
-- **3:45–4:30 Trust & reliability** — ask an SLA/bulk-limit question; explain
-  deprecated-v2 vs current-v3 and untrusted ticket history.
-- **4:30–5:00 Key decisions + close** — enforce in code; provider-agnostic
-  adapter; BM25 over embeddings; next step = eval harness with labelled Q&A.
+**[SCREEN: login screen]**
+> "Hi, I'm Ayush, and this is my submission for the ParcelPilot AI support
+> assessment. It's an AI support system with two user contexts — a
+> customer-facing agent and an internal operations agent — sharing one agent core
+> and one set of tools. The design principle: the model decides *what* to do, but
+> the guarantees — who can see what, which source to trust, and confirmation
+> before an action — are enforced in code, in the tool layer, not in the prompt.
+> There are seven tools across the three required categories, and a
+> provider-agnostic LLM adapter that runs on Hugging Face, OpenAI, Gemini, or Groq
+> via config."
+
+**[SCREEN: Customer → Northstar → ask: Can I cancel ORD-1001 without a cancellation fee? Explain why.]**
+> "As a Northstar customer, I'll ask a question that needs several steps. Watch
+> the tool chips — it looks up the order and sees it's booked but not picked up,
+> checks the account, then searches the documents. The standard SOP charges a
+> ₹250 fee after 30 minutes, and this was cancelled two hours after booking — but
+> Northstar's signed agreement waives cancellation fees entirely. Because a
+> customer's own agreement outranks general policy, the answer is: no fee,
+> explained from the actual sources. There's even a historical ticket in the data
+> with the wrong answer here, and the agent correctly ignores it."
+
+**[SCREEN: Switch identity → Customer → LumenWorks → ask: Show me ORD-1001]**
+> "Now a different customer tries to view that same Northstar order. It's
+> refused — and not by the model being polite. The data layer itself returns 'not
+> authorised', because that order belongs to another account. Customers are
+> hard-scoped to their own data; the model never even receives other accounts'
+> records."
+
+**[SCREEN: Switch identity → Internal staff → Ops → Insights tab]**
+> "An internal ops user unlocks the proactive view. Since the real tickets have
+> no severity field, it infers severity from the text and flags what needs
+> attention — two open P1 incidents already past their SLA, a Northstar outage and
+> a possible API-key exposure, plus a recurring bulk-upload cluster."
+
+**[SCREEN: back to Chat → ask: Escalate TKT-501 → click Confirm]**
+> "Any state-changing action is prepared first and needs explicit confirmation —
+> it never acts on its own. Confirm — and it's created with a reference ID."
+
+**[SCREEN: optional → ask: What's the Enterprise P1 first-response target?]**
+> "On trust: the source pack deliberately includes a deprecated policy version and
+> incorrect historical tickets. The system ranks sources by authority — agreement,
+> then current policy, then product docs — demotes deprecated docs, and treats
+> past ticket resolutions as untrusted context, so it won't repeat old mistakes.
+>
+> To close on decisions: access control and precedence live in the tool layer so
+> they hold under adversarial input; the LLM adapter is provider-agnostic; and I
+> used BM25 retrieval because the corpus is small and keyword-heavy. The repo has
+> an architecture note, a product note, and a deterministic test harness. The next
+> thing I'd add is an evaluation harness with labelled Q&A pairs. Thanks for
+> watching."
+
+## Demo script — condensed (~3 min)
+
+**[SCREEN: login]** "I'm Ayush. This is my ParcelPilot AI support system — a
+customer agent and an internal ops agent on one core. The model decides what to
+do, but access control, source reliability, and confirmation before actions are
+enforced in code, not the prompt. Seven tools across three categories, and a
+provider-agnostic LLM layer."
+
+**[SCREEN: Northstar → Can I cancel ORD-1001 without a cancellation fee?]** "A
+multi-step question — it checks the order, the account, then the documents. The
+SOP charges a fee after 30 minutes, but Northstar's agreement waives it, and the
+agreement outranks policy, so: no fee, from the sources."
+
+**[SCREEN: Switch → LumenWorks → Show me ORD-1001]** "A different customer tries
+the same order — refused by the data layer, because it belongs to another
+account."
+
+**[SCREEN: Switch → Ops → Insights]** "Ops gets the proactive view — severity
+inferred from text, flagging two P1s past SLA and a recurring bulk-upload
+cluster."
+
+**[SCREEN: Chat → Escalate TKT-501 → Confirm]** "State-changing actions are
+prepared and need confirmation. Confirm — created with a reference ID."
+
+**[SCREEN: close]** "Decisions: enforce in the tool layer; deprecated policy and
+wrong tickets are ranked down and untrusted; provider-agnostic adapter; BM25
+retrieval. Next step, an eval harness with labelled Q&A. Thanks."
 
 ## AI tools used
 
