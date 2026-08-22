@@ -7,7 +7,7 @@
 |---|---|---|
 | **1. Repository (public)** | ✅ done | https://github.com/ayushjha4wd/parcelpilot-support-ai |
 | **2. Hosted application** | ✅ done | Render (Docker, free tier): https://parcelpilot-support-ai-eurw.onrender.com |
-| **3. Demo video (~5 min)** | ⬜ record | Script below (§Demo script). Loom / Drive / YouTube link. |
+| **3. Demo video (~5 min)** | ✅ record | Script below (§Demo script). Loom / Drive / YouTube link. |
 | **4. Architecture note** | ✅ | `ARCHITECTURE.md` (agent, tools, doc+data handling, reliability, trade-offs). |
 | **5. Product note** | ✅ | `PRODUCT_NOTES.md` (chosen problem, next steps, omissions, metric). |
 | **6. AI tool usage** | ✅ | See §AI tools below. |
