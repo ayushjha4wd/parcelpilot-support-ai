@@ -1,0 +1,10 @@
+node_modules/
+__pycache__/
+*.pyc
+.env
+.venv/
+venv/
+backend/app/static/
+backend/app/data/action_log.jsonl
+.DS_Store
+dist/
